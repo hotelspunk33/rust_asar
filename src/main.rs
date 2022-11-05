@@ -54,6 +54,10 @@ fn test_extract() -> bool {
 }
 
 fn test_list() -> bool {
+    let t = AsarBuilder::new();
+    t.open_dir();
+    t.set_archive("sdsd");
+
     if let Ok(asar) = AsarBuilder::new().set_archive("test_asar_og.asar").set_dir("test1_dir").open_asar().build() {
         if asar.list().is_empty() {
             return false;

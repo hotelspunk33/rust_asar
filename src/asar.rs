@@ -1,18 +1,21 @@
 
 use std::{path::Path, fs::File};
-
 use byteorder::LittleEndian;
 use positioned_io::{ByteIo, ReadBytesExt, ReadAt};
 
 use crate::content::Content;
 
 #[derive(Copy, Clone, Debug)]
+
+//enum State: temporary
+//Represents input, can be either an asar file or a directory
 enum State {
     Asar,
     Dir
 }
 
-
+//struct AsarBuilder: Permanent
+//Store info (names, state) for the building of Asar
 pub struct AsarBuilder {
     archive_name: Option<String>,
     dir_name: Option<String>,
@@ -20,26 +23,29 @@ pub struct AsarBuilder {
 }
 
 impl AsarBuilder {
-    pub fn new() -> AsarBuilder {
+    pub fn new() -> AsarBuilder { //self-explantory for now: instantiationish
         AsarBuilder {archive_name: None, dir_name: None, state: None}
     }
 
-    pub fn set_dir(mut self, name: &str) -> AsarBuilder {
+    //set the directory name for Asar
+    pub fn set_dir(&mut self, name: &str) -> &AsarBuilder { 
         self.dir_name = Some(name.to_string());
         self
     }
 
-    pub fn set_archive(mut self, name: &str) -> AsarBuilder {
+    //set the archive name for Asar
+    pub fn set_archive(&mut self, name: &str) -> &AsarBuilder {
         self.archive_name = Some(name.to_string());
         self
     }
 
-    pub fn open_asar(mut self) -> AsarBuilder {
+    //Asar archive file exists and will be opened
+    pub fn open_asar(&mut self) -> &AsarBuilder {
         self.state = Some(State::Asar); 
         self
     }
 
-    pub fn open_dir(mut self) -> AsarBuilder {
+    pub fn open_dir(&mut self) -> &AsarBuilder {
         self.state = Some(State::Dir);
         self
     }
