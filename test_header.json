@@ -1,0 +1,44 @@
+{
+    "files": {
+        "folder1": {
+            "files": {
+                "script.py": {
+                    "size": 55,
+                    "offset": "0",
+                    "integrity": {
+                        "algorithm": "SHA256",
+                        "hash": "c3a75459dc989558e2678268c8ba64cb4130b9ef9e19c5b87f2e6a7c12ecc836",
+                        "blockSize": 4194304,
+                        "blocks": [
+                            "c3a75459dc989558e2678268c8ba64cb4130b9ef9e19c5b87f2e6a7c12ecc836"
+                        ]
+                    }
+                },
+                "test_image.jpg": {
+                    "size": 29968,
+                    "offset": "55",
+                    "integrity": {
+                        "algorithm": "SHA256",
+                        "hash": "358ff5e798be705462494872ca987523684d4b2abeb86b6664362cf48af7a8c7",
+                        "blockSize": 4194304,
+                        "blocks": [
+                            "358ff5e798be705462494872ca987523684d4b2abeb86b6664362cf48af7a8c7"
+                        ]
+                    }
+                }
+            }
+        },
+        "test1.txt": {
+            "size": 21,
+            "offset": "30023",
+            "integrity": {
+                "algorithm": "SHA256",
+                "hash": "649b8b471e7d7bc175eec758a7006ac693c434c8297c07db15286788c837154a",
+                "blockSize": 4194304,
+                "blocks": [
+                    "649b8b471e7d7bc175eec758a7006ac693c434c8297c07db15286788c837154a"
+                ]
+            }
+        }
+    }
+}

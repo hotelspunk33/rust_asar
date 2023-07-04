@@ -1,0 +1,12 @@
+[package]
+name = "rust_asar"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+positioned-io = "0.2.2"
+byteorder = "0.5.3"
+serde_json = "1.0.82"
+
