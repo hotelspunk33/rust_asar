@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["asar","asar_error","content"]};
