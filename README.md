@@ -6,6 +6,12 @@ Library to create, modify, and extract Asar archives, as does Electron's Asar li
 
 ------------
 
+## Documentation
+
+View the documentation [here](https://hotelspunk33.github.io/rust_asar/). 
+
+------------
+
 ## Idea
 
 todo
@@ -38,17 +44,12 @@ The following features have yet to be implemented:
 - executable functionality for Linux and Mac
 
 > Missing functionality should not be difficult to implement if needed in the future.
-------------
-
-## Usage
-
-View the documentation here. 
 
 ------------
 
 ## Examples
 
-Examples have not been added to documentation yet. For now, refer to the test cases in src/lib.rs as an example.
+Examples have not been added to the documentation yet. For now, refer to the test cases in src/lib.rs as an example.
 
 ------------
 
