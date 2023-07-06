@@ -1,6 +1,6 @@
 # rust_asar
 
-Library to create, modify, and extract Asar archives, as does Electron's Asar library.
+Library to create, modify, and extract Asar archives, as does Electron's Asar [library](https://github.com/electron/asar).
 
 > I implemented this project with no inspiration from Electron's library, as the goal was not to create a rewrite but to reverse-engineer the Asar archive.
 
@@ -8,11 +8,47 @@ Library to create, modify, and extract Asar archives, as does Electron's Asar li
 
 ## Idea
 
-todo
+The Asar archive file is a flat archive file that concatenates files together, allowing for random file access. 
+
+The file format is quite simple, as it is super flat and encoded in bytes. 
+
+The header of an Asar archive file contains the size of the header, along with offsets that point toward where the file contents begin (after the header), which can also be derived from the header size.
+
+```
+Header Size (length of JSON + padding) | JSON Length | JSON value| File Contents
+```
+
+The JSON value represents the file structure within the Asar archive. 
+
+A simple example:
+```
+{
+    "files": {
+        "folder1": {
+            "files": {
+                "script.py": {
+                    "size": 55,
+                    "offset": "0",
+                },
+                "test_image.jpg": {
+                    "size": 29968,
+                    "offset": "55",
+                }
+            }
+        },
+        "test1.txt": {
+            "size": 21,
+            "offset": "30023",
+        }
+    }
+}
+```
+
+> Integrity, symbolic links, and executables have not been implemented, so such functionality is not shown in this example.
 
 ------------
 
-### Asar Archive Structure:
+### Asar Archive Represented Structure:
 
 The Content enum keeps track of an asar file's internal structure, represented by
 Files, Folders, and Home (the starting directory / base case).
@@ -36,6 +72,8 @@ The following features have yet to be implemented:
 - file integrity (algorithm, hash, blockSize, blocks)
 
 - executable functionality for Linux and Mac
+
+- symbolic link support
 
 > Missing functionality should not be difficult to implement if needed in the future.
 ------------

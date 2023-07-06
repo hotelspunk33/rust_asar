@@ -156,6 +156,9 @@ impl Content {
         }
     }
 
+    /// todo -> last thing then done
+    pub fn write_to_asar<P: AsRef<Path>>(&self, _dest: P){}
+
     /// Searches for a file by its full path name provided by the parameter `path`.
     /// 
     /// Returns the Content enum of the `path` if found, otherwise `None`.
@@ -230,13 +233,14 @@ impl Content {
 }
 
 /// Returns the content value based on the paramters given.
-/// Receives a name of type str and item of Serde Map,
+/// Receives a name of type string slice and item of Serde Map,
 /// returning a named Content value after parsing the item.
 
 fn lookahead(
     name: &str,
     item: &serde_json::Map<String, Value>,
 ) -> Result<Content, asar_error::Error> {
+
     if name.is_empty() {
         //value is either home
         if let Some(Value::Object(dir)) = item.get("files") {

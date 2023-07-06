@@ -163,15 +163,69 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code>
 <span class="kw">use </span>std::{
-    fs::File,
+    fs::{File, <span class="self">self</span>},
     path::{Path, PathBuf},
 };
 
 <span class="kw">use </span>byteorder::LittleEndian;
 <span class="kw">use </span>positioned_io::{ReadAt, ReadBytesExt};
-<span class="kw">use </span>serde_json::Value;
+<span class="kw">use </span>serde_json::{Value, Map, json};
 
 <span class="kw">use crate</span>::{
     asar_error::{<span class="self">self</span>, Error},
@@ -210,16 +264,24 @@
         <span class="kw">let </span>src_path = src_path.as_ref();
 
         <span class="kw">if </span>src_path.is_dir() {
-            <span class="macro">todo!</span>(<span class="string">&quot;TODO: Asar archive deconstruction&quot;</span>)
+            
+            <span class="kw">let </span>(header, start) = <span class="self">Self</span>::gen_header_from_dir(src_path)<span class="question-mark">?</span>;
+
+            <span class="prelude-val">Ok</span>(Asar {
+                src_path: src_path.to_path_buf(),
+                content: Content::new(header)<span class="question-mark">?</span>,
+                start: start,
+            })
+
         } <span class="kw">else </span>{
             <span class="comment">//src must be asar, assume it is and dont check
             </span><span class="kw">let </span>file = File::open(src_path)<span class="question-mark">?</span>;
 
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>((value, start)) = <span class="self">Self</span>::get_asar_header(<span class="kw-2">&amp;</span>file) {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>((header, start)) = <span class="self">Self</span>::get_asar_header(<span class="kw-2">&amp;</span>file) {
                 
                 <span class="prelude-val">Ok</span>(Asar {
                     src_path: src_path.to_path_buf(),
-                    content: Content::new(value)<span class="question-mark">?</span>,
+                    content: Content::new(header)<span class="question-mark">?</span>,
                     start: start,
                 })
             } <span class="kw">else </span>{
@@ -230,8 +292,12 @@
         }
     }
 
-    <span class="comment">// Obtains header of Asar archive file, returing the header as a serde_json::Value and the start offset.
-    </span><span class="kw">fn </span>get_asar_header(file: <span class="kw-2">&amp;</span>File) -&gt; <span class="prelude-ty">Result</span>&lt;(Value, u64), asar_error::Error&gt; {
+    <span class="doccomment">/// Returns a tuple of the header of an Asar archive file as `serde_json::Value`, and the start offset as `u64`, 
+    /// otherwise Error.
+    ///
+    /// The file provided must be an Asar archive file, otherwise unintended behavior may occur.
+    
+    </span><span class="kw">pub fn </span>get_asar_header(file: <span class="kw-2">&amp;</span>File) -&gt; <span class="prelude-ty">Result</span>&lt;(Value, u64), asar_error::Error&gt; {
         <span class="kw">let </span>json_len = file.read_u32_at::&lt;LittleEndian&gt;(JSON_LEN_OFFSET)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>json_u8: Vec&lt;u8&gt; = <span class="macro">vec!</span>[<span class="number">0</span>; json_len <span class="kw">as </span>usize];
 
@@ -244,6 +310,48 @@
         };
 
         <span class="prelude-val">Ok</span>((value, start))
+    }
+
+    <span class="doccomment">/// Generates a header for the Asar archive file from the provided directory, along with a start offset.
+    /// 
+    /// Takes one argument of type Path which must be a folder- unintended behavior may occur if a file is passed.
+    /// 
+    /// Returns a tuple of `serde_json::Value` and `u64`, otherwise Error.
+    /// 
+
+    </span><span class="kw">pub fn </span>gen_header_from_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; <span class="prelude-ty">Result</span>&lt;(Value, u64), asar_error::Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>offset: u64 = <span class="number">0</span>;
+
+        <span class="prelude-val">Ok</span>((<span class="self">Self</span>::dir_to_value(path, <span class="kw-2">&amp;mut </span>offset)<span class="question-mark">?</span>, offset + <span class="number">16</span>))
+    }
+
+    <span class="kw">fn </span>dir_to_value&lt;P: AsRef&lt;Path&gt;&gt;(path: P, offset: <span class="kw-2">&amp;mut </span>u64) -&gt; <span class="prelude-ty">Result</span>&lt;Value, asar_error::Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>result = Map::new();
+        
+        <span class="kw">let </span>path = path.as_ref();
+
+        <span class="kw">let </span>metadata = path.metadata()<span class="question-mark">?</span>;
+
+        <span class="kw">if </span>metadata.is_dir() { <span class="comment">//add folder and recurse - value to 
+
+            </span><span class="kw">let </span><span class="kw-2">mut </span>folder_content = Map::new();
+
+            <span class="kw">for </span>entry <span class="kw">in </span>fs::read_dir(path)<span class="question-mark">? </span>{
+                <span class="kw">let </span>entry = entry<span class="question-mark">?</span>;
+                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), <span class="self">Self</span>::dir_to_value(entry.path(), offset)<span class="question-mark">?</span>);
+            }
+
+            result.insert(<span class="string">&quot;files&quot;</span>.to_string(), Value::Object(folder_content));
+
+        } <span class="kw">else if </span>metadata.is_file() { <span class="comment">//add file
+
+            </span>result.insert(<span class="string">&quot;size&quot;</span>.to_string(), <span class="macro">json!</span>(metadata.len()));
+            result.insert(<span class="string">&quot;offset&quot;</span>.to_string(), Value::String(offset.to_string()));
+
+            <span class="kw-2">*</span>offset += metadata.len();
+        }
+
+        <span class="prelude-val">Ok</span>(Value::Object(result))
     }
 
     <span class="doccomment">/// Returns a vector of all Paths within an archive as Strings, otherwise an Error.

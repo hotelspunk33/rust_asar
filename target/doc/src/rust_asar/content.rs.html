@@ -337,6 +337,10 @@
 <a href="#337" id="337">337</a>
 <a href="#338" id="338">338</a>
 <a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     fs::{DirBuilder, File},
     io::Write,
@@ -495,6 +499,9 @@
         }
     }
 
+    <span class="doccomment">/// todo -&gt; last thing then done
+    </span><span class="kw">pub fn </span>write_to_asar&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _dest: P){}
+
     <span class="doccomment">/// Searches for a file by its full path name provided by the parameter `path`.
     /// 
     /// Returns the Content enum of the `path` if found, otherwise `None`.
@@ -569,13 +576,14 @@
 }
 
 <span class="doccomment">/// Returns the content value based on the paramters given.
-/// Receives a name of type str and item of Serde Map,
+/// Receives a name of type string slice and item of Serde Map,
 /// returning a named Content value after parsing the item.
 
 </span><span class="kw">fn </span>lookahead(
     name: <span class="kw-2">&amp;</span>str,
     item: <span class="kw-2">&amp;</span>serde_json::Map&lt;String, Value&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Content, asar_error::Error&gt; {
+
     <span class="kw">if </span>name.is_empty() {
         <span class="comment">//value is either home
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(Value::Object(dir)) = item.get(<span class="string">&quot;files&quot;</span>) {

@@ -1,12 +1,12 @@
 
 use std::{
-    fs::File,
+    fs::{File, self},
     path::{Path, PathBuf},
 };
 
 use byteorder::LittleEndian;
 use positioned_io::{ReadAt, ReadBytesExt};
-use serde_json::Value;
+use serde_json::{Value, Map, json};
 
 use crate::{
     asar_error::{self, Error},
@@ -45,16 +45,24 @@ impl Asar {
         let src_path = src_path.as_ref();
 
         if src_path.is_dir() {
-            todo!("TODO: Asar archive deconstruction")
+            
+            let (header, start) = Self::gen_header_from_dir(src_path)?;
+
+            Ok(Asar {
+                src_path: src_path.to_path_buf(),
+                content: Content::new(header)?,
+                start: start,
+            })
+
         } else {
             //src must be asar, assume it is and dont check
             let file = File::open(src_path)?;
 
-            if let Ok((value, start)) = Self::get_asar_header(&file) {
+            if let Ok((header, start)) = Self::get_asar_header(&file) {
                 
                 Ok(Asar {
                     src_path: src_path.to_path_buf(),
-                    content: Content::new(value)?,
+                    content: Content::new(header)?,
                     start: start,
                 })
             } else {
@@ -65,8 +73,12 @@ impl Asar {
         }
     }
 
-    // Obtains header of Asar archive file, returing the header as a serde_json::Value and the start offset.
-    fn get_asar_header(file: &File) -> Result<(Value, u64), asar_error::Error> {
+    /// Returns a tuple of the header of an Asar archive file as `serde_json::Value`, and the start offset as `u64`, 
+    /// otherwise Error.
+    ///
+    /// The file provided must be an Asar archive file, otherwise unintended behavior may occur.
+    
+    pub fn get_asar_header(file: &File) -> Result<(Value, u64), asar_error::Error> {
         let json_len = file.read_u32_at::<LittleEndian>(JSON_LEN_OFFSET)?;
         let mut json_u8: Vec<u8> = vec![0; json_len as usize];
 
@@ -79,6 +91,48 @@ impl Asar {
         };
 
         Ok((value, start))
+    }
+
+    /// Generates a header for the Asar archive file from the provided directory, along with a start offset.
+    /// 
+    /// Takes one argument of type Path which must be a folder- unintended behavior may occur if a file is passed.
+    /// 
+    /// Returns a tuple of `serde_json::Value` and `u64`, otherwise Error.
+    /// 
+
+    pub fn gen_header_from_dir<P: AsRef<Path>>(path: P) -> Result<(Value, u64), asar_error::Error> {
+        let mut offset: u64 = 0;
+
+        Ok((Self::dir_to_value(path, &mut offset)?, offset + 16))
+    }
+
+    fn dir_to_value<P: AsRef<Path>>(path: P, offset: &mut u64) -> Result<Value, asar_error::Error> {
+        let mut result = Map::new();
+        
+        let path = path.as_ref();
+
+        let metadata = path.metadata()?;
+
+        if metadata.is_dir() { //add folder and recurse - value to 
+
+            let mut folder_content = Map::new();
+
+            for entry in fs::read_dir(path)? {
+                let entry = entry?;
+                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), Self::dir_to_value(entry.path(), offset)?);
+            }
+
+            result.insert("files".to_string(), Value::Object(folder_content));
+
+        } else if metadata.is_file() { //add file
+
+            result.insert("size".to_string(), json!(metadata.len()));
+            result.insert("offset".to_string(), Value::String(offset.to_string()));
+
+            *offset += metadata.len();
+        }
+
+        Ok(Value::Object(result))
     }
 
     /// Returns a vector of all Paths within an archive as Strings, otherwise an Error.
