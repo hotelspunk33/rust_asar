@@ -1,2 +1,3 @@
-/target
+/t:arget
 /Cargo.lock
+.DS_Store
