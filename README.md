@@ -1,6 +1,7 @@
 # rust_asar
 
-Utility/Library to create, modify, and extract Asar archives, as does Electron's Asar library.
+Library to create, modify, and extract Asar archives, as does Electron's Asar library.
+
 > I implemented this project with no inspiration from Electron's library, as the goal was not to create a rewrite but to reverse-engineer the Asar archive.
 
 ------------
@@ -15,6 +16,7 @@ todo
 
 The Content enum keeps track of an asar file's internal structure, represented by
 Files, Folders, and Home (the starting directory / base case).
+
 The Content enum recursively consists of:
 
 `File   (name, offset, size)`    -> `File   (PathBuf, u64, u64)`
@@ -32,6 +34,7 @@ This library is not compatible with modern versions of the Asar archive. The ful
 The following features have yet to be implemented:
 
 - file integrity (algorithm, hash, blockSize, blocks)
+
 - executable functionality for Linux and Mac
 
 > Missing functionality should not be difficult to implement if needed in the future.
@@ -39,9 +42,13 @@ The following features have yet to be implemented:
 
 ## Usage
 
+View the documentation here. 
+
 ------------
 
 ## Examples
+
+Examples have not been added to documentation yet. For now, refer to the test cases in src/lib.rs as an example.
 
 ------------
 

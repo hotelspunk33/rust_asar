@@ -1,29 +1,41 @@
-
-
 use std::{
     fs::{DirBuilder, File},
     io::Write,
     path::{Path, PathBuf},
 };
 
-
-
-//use byteorder::LittleEndian;
 use positioned_io::{ReadAt};
 use serde_json::{Map, Value};
 
 use crate::asar_error::{self, Error};
 
 /// The maximum size of a file within an asar archive.
-const MAX_SAFE_INTEGER: u64 = 9007199254740991; //from Electron's Asar library
+const MAX_SAFE_INTEGER: u64 = 9007199254740991; //for compatability with Electron's Asar library
 
-/// Content keeps track of an asar file's internal structure, represented by
+
+/// Content enum keeps track of an asar file's internal structure, represented by
 /// Files, Folders, and Home (the starting directory).
 ///
 /// The asar structure recursively consists of:
+/// 
 /// `File   (name, offset, size)`    -> `File   (PathBuf, u64, u64)`
+/// 
 /// `Folder (name, folder_contents)` -> `Folder (PathBuf, Map<String, Value>)`
+/// 
 /// `Home   (asar_contents)`         -> `Home   (Map<String, Value>)`
+/// 
+/// Where:
+/// 
+/// - name (PathBuf):  the respective name of the content type -> PathBuf
+/// 
+/// - offset   (u64):  the offset in the Asar archive file at which the File content symbolically exists
+/// 
+/// - size     (u64):  the size of the File content
+/// 
+/// - folder_contents (Map<String, Value>):  Represents the inside contents within a Folder content.
+/// 
+/// - asar_contents   (Map<String, Value>):  Represents the inside contents of the base folder (base case).
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Content {
     File(PathBuf, u64, u64),             // (name, offset, size)
@@ -31,12 +43,17 @@ pub enum Content {
     Home(Map<String, Value>),            // (asar_content)
 }
 
+
 impl Content {
-    /// Creates a Content enum from the content parameter of type serde_json::Map.
-    ///
-    /// Returns Content on success or error if asar header's JSON structure is incorrect.
-    pub fn new(content: Value) -> Result<Content, asar_error::Error> {
-        if let Value::Object(item) = content {
+
+    /// Instantiates a Content enum given the one argument provided of type `serde_json::Value`.
+    /// 
+    /// The parameter `header` represents a JSON value found as the header in an Asar archive.
+    /// 
+    /// Returns instantiated Content enum, otherwise Error.
+    
+    pub fn new(header: Value) -> Result<Content, asar_error::Error> {
+        if let Value::Object(item) = header {
             Ok(lookahead("", &item)?)
         } else {
             Err(Error::UnknownContentType(
@@ -45,7 +62,9 @@ impl Content {
         }
     }
 
-    /// Returns a vector (Result) of paths of all files and folders of asar.
+    /// Returns a vector of PathBufs representing all files and folders within Asar archive,
+    /// otherwise an Error.
+    
     pub fn paths_to_vec(&self) -> Result<Vec<PathBuf>, asar_error::Error> {
         let mut vec: Vec<PathBuf> = Vec::new(); //problematic for concurrency
 
@@ -70,14 +89,28 @@ impl Content {
         Ok(vec)
     }
 
-    /// Extracts an Asar archive to the file system.
-    /// Returns asar_error::Error if something goes wrong (i/o, FS parsing, Asar structure).
-    pub fn write_to_dir(
+    /// Writes the files and folders of current Content enum to the provided base_path folder.
+    /// 
+    /// - base_path: the destination folder (home folder) where archive content will be written
+    /// 
+    /// - file: the Asar archive file to obtain the Content to be written
+    /// 
+    /// - start: the offset at which the file content start within Asar archive file
+    /// 
+    /// > The Asar archive file must be passed in the `file` parameter, 
+    /// otherwise unintended behavior may occur.
+    /// 
+    /// Returns (), otherwise Error.
+    
+    pub fn write_to_dir<P: AsRef<Path>>(
         &self,
-        base_path: &Path,
+        base_path: P,
         file: &File,
         start: u64,
     ) -> Result<(), asar_error::Error> {
+
+        let base_path = base_path.as_ref();
+
         match self {
 
             // Create folder for home directory of Asar
@@ -123,22 +156,26 @@ impl Content {
         }
     }
 
-    /// Searches for a file by its full path name.
-    /// Returns the Content enum of the file if found, otherwise `None`.
+    /// Searches for a file by its full path name provided by the parameter `path`.
+    /// 
+    /// Returns the Content enum of the `path` if found, otherwise `None`.
+    /// > All Content types are valid to be returned.
 
-    pub fn find(&self, path: &Path) -> Option<Content> {
+    pub fn find<P>(&self, path: P) -> Option<Content>
+        where P: AsRef<Path> {
         // Recursively finds path in content
-        fn find_aux(content: &Content, path: &Path, curr_path: &Path) -> Option<Content> {
+        fn find_aux<P>(content: &Content, path: P, curr_path: &Path) -> Option<Content> 
+        where P: AsRef<Path> {
             match content {
                 Content::Home(dir) => {
-                    if let None = path.file_stem() {
+                    if let None = path.as_ref().file_stem() {
                         // path is home
                         return Some(content.clone());
                         //return Some(Content::Home(dir.clone()));
                     } else {
                         // iterate through home directory
                         for (name, object) in dir.into_iter() {
-                            if path.starts_with(curr_path.join(name)) { //dont like might change
+                            if path.as_ref().starts_with(curr_path.join(name)) { //dont like might change
                                 // check if item is correct
                                 if let Value::Object(item) = object {
                                     return find_aux(
@@ -155,7 +192,7 @@ impl Content {
                 }
 
                 Content::File(name, _, _) => {
-                    if path.eq(curr_path.join(name).as_path()) {
+                    if path.as_ref().eq(curr_path.join(name).as_path()) {
                         return Some(content.clone());
                         //return Some(Content::File(*name, *offset, *size));
                     } else {
@@ -166,13 +203,13 @@ impl Content {
                 Content::Folder(name, dir) => {
                     let curr_path = curr_path.join(name);
 
-                    if curr_path.eq(path) {
+                    if curr_path.eq(path.as_ref()) {
                         return Some(content.clone());
                     }
 
                     // iterate through folder to find next correct element
                     for (name, object) in dir.into_iter() {
-                        if path.starts_with(curr_path.join(name)) {
+                        if path.as_ref().starts_with(curr_path.join(name)) {
                             if let Value::Object(item) = object {
                                 return find_aux(
                                     &lookahead(&name, &item).unwrap(),

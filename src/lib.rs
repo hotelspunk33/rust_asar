@@ -136,6 +136,7 @@ mod tests {
             file.read(&mut buf).unwrap();
 
             assert_eq!(asar.get_file(Path::new("folder1/test_image.jpg")).unwrap(), buf);
+            assert!(asar.get_file("folder1").is_none());
         };
 
         

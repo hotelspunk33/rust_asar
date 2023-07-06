@@ -2,6 +2,15 @@ use std::{fmt::Display, num::ParseIntError};
 
 
 
+/// Standard Error enum, containing all necessary custom and dependent Error types.
+/// 
+/// - IOError -> `std::io::Error`
+/// 
+/// - ParseHeaderError -> rust_asar
+/// 
+/// - UnknownContentType -> rust_asar
+/// 
+/// - SerdeJsonError -> `serde_json::Error`
 
 #[derive(Debug)]
 pub enum Error { //poor error handling :/ - might fix
@@ -22,12 +31,16 @@ impl Display for Error {
     }
 }
 
+/// From<std::io::Error>
+/// 
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
         Error::IoError(err)
     }
 }
 
+/// From<ParseIntError>
+/// 
 impl From<ParseIntError> for Error {
     fn from(err: ParseIntError) -> Self {
         //only use of ParseIntError is when parsing asar header
@@ -35,6 +48,8 @@ impl From<ParseIntError> for Error {
     }
 }
 
+/// From<serde_json::Error>
+/// 
 impl From<serde_json::Error> for Error{
     fn from(err: serde_json::Error) -> Self {
         Error::SerdeJsonError(err)
