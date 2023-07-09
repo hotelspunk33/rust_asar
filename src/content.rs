@@ -1,10 +1,10 @@
 use std::{
     fs::{DirBuilder, File},
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
-use positioned_io::{ReadAt};
+use positioned_io::ReadAt;
 use serde_json::{Map, Value};
 
 use crate::asar_error::{self, Error};
@@ -12,47 +12,56 @@ use crate::asar_error::{self, Error};
 /// The maximum size of a file within an asar archive.
 const MAX_SAFE_INTEGER: u64 = 9007199254740991; //for compatability with Electron's Asar library
 
-
 /// Content enum keeps track of an asar file's internal structure, represented by
-/// Files, Folders, and Home (the starting directory).
+/// Files, Folders, and Home (the starting directory) for an Asar archive.
+/// 
+/// The List varient is reserved for opening folders as the source path.
 ///
 /// The asar structure recursively consists of:
-/// 
+///
 /// `File   (name, offset, size)`    -> `File   (PathBuf, u64, u64)`
-/// 
+///
 /// `Folder (name, folder_contents)` -> `Folder (PathBuf, Map<String, Value>)`
-/// 
+///
 /// `Home   (asar_contents)`         -> `Home   (Map<String, Value>)`
 /// 
+/// `List   (Vec<(path, size>)`    -> 'List   (Vec<(PathBuf, u64)>)'
+///
 /// Where:
+///
+/// - name (PathBuf):  The respective name of the content type -> PathBuf
+///
+/// - offset   (u64):  The offset in the Asar archive file at which the File content symbolically exists
+///
+/// - size     (u64):  The size of the File content
+///
+/// - folder_contents  (Map<String, Value>):  Represents the inside contents within a Folder content
+///
+/// - asar_contents    (Map<String, Value>):  Represents the inside contents of the base folder (base case)
 /// 
-/// - name (PathBuf):  the respective name of the content type -> PathBuf
+/// - path (PathBuf):  The full path of a file that will be added to Asar archive file
 /// 
-/// - offset   (u64):  the offset in the Asar archive file at which the File content symbolically exists
-/// 
-/// - size     (u64):  the size of the File content
-/// 
-/// - folder_contents (Map<String, Value>):  Represents the inside contents within a Folder content.
-/// 
-/// - asar_contents   (Map<String, Value>):  Represents the inside contents of the base folder (base case).
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Content {
     File(PathBuf, u64, u64),             // (name, offset, size)
     Folder(PathBuf, Map<String, Value>), // (name, folder_content)
     Home(Map<String, Value>),            // (asar_content)
+    List(Vec<(PathBuf, u64)>),           // (Listof (full_file_path, size))
 }
-
 
 impl Content {
 
     /// Instantiates a Content enum given the one argument provided of type `serde_json::Value`.
-    /// 
+    ///
     /// The parameter `header` represents a JSON value found as the header in an Asar archive.
-    /// 
+    /// Thus, used to enumerate internal strucuture of Asar archive file.
+    ///
+    /// Do not use with opened folder.
+    ///
     /// Returns instantiated Content enum, otherwise Error.
-    
-    pub fn new(header: Value) -> Result<Content, asar_error::Error> {
+
+    pub fn new_json(header: Value) -> Result<Content, asar_error::Error> {
         if let Value::Object(item) = header {
             Ok(lookahead("", &item)?)
         } else {
@@ -62,9 +71,28 @@ impl Content {
         }
     }
 
+
+    /// Instantiates a Content enum given the one argument provided,
+    /// representing a list of files and their size.
+    ///
+    /// - `(PathBuf, u64)` -> `(full file path, length of file)`
+    ///
+    /// This specific varient represents the files of a directory to be concatenated on to an Asar archive file.
+    /// Due to this, functionality is limited to only the `dir_to_asar` function.
+    /// 
+    ///
+    /// Do not use with opened Asar archive file.
+    ///
+    /// Returns the List varient of the Content enum.
+
+    pub fn new_list(list: Vec<(PathBuf, u64)>) -> Content {
+        Content::List(list)
+    }
+
+
     /// Returns a vector of PathBufs representing all files and folders within Asar archive,
     /// otherwise an Error.
-    
+
     pub fn paths_to_vec(&self) -> Result<Vec<PathBuf>, asar_error::Error> {
         let mut vec: Vec<PathBuf> = Vec::new(); //problematic for concurrency
 
@@ -88,38 +116,37 @@ impl Content {
 
         Ok(vec)
     }
+    
 
     /// Writes the files and folders of current Content enum to the provided base_path folder.
-    /// 
+    ///
     /// - base_path: the destination folder (home folder) where archive content will be written
-    /// 
+    ///
     /// - file: the Asar archive file to obtain the Content to be written
-    /// 
+    ///
     /// - start: the offset at which the file content start within Asar archive file
-    /// 
-    /// > The Asar archive file must be passed in the `file` parameter, 
+    ///
+    /// > The Asar archive file must be passed in the `file` parameter,
     /// otherwise unintended behavior may occur.
-    /// 
+    ///
     /// Returns (), otherwise Error.
-    
-    pub fn write_to_dir<P: AsRef<Path>>(
+
+    pub fn asar_to_dir<P: AsRef<Path>>(
         &self,
         base_path: P,
         file: &File,
         start: u64,
     ) -> Result<(), asar_error::Error> {
-
         let base_path = base_path.as_ref();
 
         match self {
-
             // Create folder for home directory of Asar
             Content::Home(dir) => {
                 for (name, value) in dir.iter() {
                     if let Value::Object(content) = value {
                         //cast
                         DirBuilder::new().recursive(true).create(base_path)?; //Create parent directory
-                        lookahead(name, content)?.write_to_dir(base_path, file, start)?;
+                        lookahead(name, content)?.asar_to_dir(base_path, file, start)?;
                     }
                 }
 
@@ -133,7 +160,7 @@ impl Content {
 
                 for (name, value) in dir.iter() {
                     if let Value::Object(content) = value {
-                        lookahead(name, content)?.write_to_dir(path.as_path(), file, start)?;
+                        lookahead(name, content)?.asar_to_dir(path.as_path(), file, start)?;
                     }
                 }
 
@@ -145,7 +172,7 @@ impl Content {
                 let path = base_path.join(name);
 
                 let mut file_as_vec: Vec<u8> = vec![0; *size as usize]; //init vec of bytes for file
-                //io.read_exact_at(start + offset, &mut file_as_vec)?;
+                                                                        //io.read_exact_at(start + offset, &mut file_as_vec)?;
                 file.read_exact_at(start + offset, &mut file_as_vec)?;
 
                 let mut file = File::create(&path)?;
@@ -153,22 +180,65 @@ impl Content {
 
                 Ok(())
             }
+
+            _ => Err(Error::UnknownContentType(format!(
+                "Asar archive file must be src_path"
+            ))),
         }
     }
 
-    /// todo -> last thing then done
-    pub fn write_to_asar<P: AsRef<Path>>(&self, _dest: P){}
+
+    /// Concatenates all files (recursively) of a directory to the Asar archive file provided.
+    /// 
+    /// Files are represented by vec in Content::List(vec).
+    /// 
+    /// Takes in one argument of type `&mut File`, which must be the Asar archive file in creation.
+    /// > The Asar archive file must have its header written prior to this function call, 
+    /// as only files are concatenated.
+    /// 
+
+    pub fn dir_to_asar(&self, asar: &mut File) -> Result<(), asar_error::Error> {
+        if let Content::List(paths) = &self {
+            for (path, size) in paths {
+                let mut buf: Vec<u8> = vec![0; *size as usize];
+
+                {
+                    let mut file = File::open(path)?;
+
+                    file.read_to_end(&mut buf)?;
+                }
+
+                //write to asar...
+                asar.write_all(&buf)?;
+            }
+
+            return Ok(());
+        }
+
+        Err(Error::UnknownContentType(format!(
+            "Folder must be src_path, Asar archive file found"
+        )))
+    }
+
 
     /// Searches for a file by its full path name provided by the parameter `path`.
-    /// 
+    ///
+    /// Asar archive file must be opened.
+    ///
+    /// `None` will be returned if a directory is opened.
+    ///
     /// Returns the Content enum of the `path` if found, otherwise `None`.
     /// > All Content types are valid to be returned.
 
     pub fn find<P>(&self, path: P) -> Option<Content>
-        where P: AsRef<Path> {
+    where
+        P: AsRef<Path>,
+    {
         // Recursively finds path in content
-        fn find_aux<P>(content: &Content, path: P, curr_path: &Path) -> Option<Content> 
-        where P: AsRef<Path> {
+        fn find_aux<P>(content: &Content, path: P, curr_path: &Path) -> Option<Content>
+        where
+            P: AsRef<Path>,
+        {
             match content {
                 Content::Home(dir) => {
                     if let None = path.as_ref().file_stem() {
@@ -178,7 +248,8 @@ impl Content {
                     } else {
                         // iterate through home directory
                         for (name, object) in dir.into_iter() {
-                            if path.as_ref().starts_with(curr_path.join(name)) { //dont like might change
+                            if path.as_ref().starts_with(curr_path.join(name)) {
+                                //dont like might change
                                 // check if item is correct
                                 if let Value::Object(item) = object {
                                     return find_aux(
@@ -224,6 +295,8 @@ impl Content {
                     }
                     None
                 }
+
+                _ => None,
             }
         }
 
@@ -240,7 +313,6 @@ fn lookahead(
     name: &str,
     item: &serde_json::Map<String, Value>,
 ) -> Result<Content, asar_error::Error> {
-
     if name.is_empty() {
         //value is either home
         if let Some(Value::Object(dir)) = item.get("files") {

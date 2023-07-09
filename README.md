@@ -8,26 +8,28 @@ Library to create, modify, and extract Asar archives, as does Electron's Asar [l
 
 ## Documentation
 
-View the documentation [here](https://hotelspunk33.github.io/rust_asar/). 
+View the documentation [here](https://hotelspunk33.github.io/rust_asar/).
 
 ------------
 
 ## Idea
 
-The Asar archive file is a flat archive file that concatenates files together, allowing for random file access. 
+The Asar archive file is a flat archive file that concatenates files together, allowing for random file access.
 
-The file format is quite simple, as it is super flat and encoded in bytes. 
+The file format is quite simple, as it is super flat and encoded in bytes.
 
 The header of an Asar archive file contains the size of the header, along with offsets that point toward where the file contents begin (after the header), which can also be derived from the header size.
 
-```
+```text
 Header Size (length of JSON + padding) | JSON Length | JSON value| File Contents
 ```
 
-The JSON value represents the file structure within the Asar archive. 
+The JSON value represents the file structure within the Asar archive.
 
 A simple example:
-```
+
+```json
+
 {
     "files": {
         "folder1": {
@@ -54,7 +56,7 @@ A simple example:
 
 ------------
 
-### Asar Archive Represented Structure:
+### Asar Archive Represented Structure
 
 The Content enum keeps track of an asar file's internal structure, represented by
 Files, Folders, and Home (the starting directory / base case).

@@ -27,10 +27,8 @@ mod tests {
 
         let dummy: Content = {
             let header_json: Value = serde_json::from_reader(reader).unwrap();
-            Content::new(header_json).unwrap()
+            Content::new_json(header_json).unwrap()
         };
-
-        //println!("test_header_1: dummy created");
 
         let paths = dummy.paths_to_vec().unwrap();
 
@@ -43,11 +41,14 @@ mod tests {
         
         // testing value generated for directory
 
-        let val = Asar::gen_header_from_dir("test_folder");
+        let val = Asar::gen_header_from_dir("test_folder").unwrap();
 
-        let content = Content::new(val.unwrap().0);
+        let content = Content::new_json(val.0);
 
         assert!(content.is_ok());
+
+        
+
         let paths = content.unwrap().paths_to_vec().unwrap();
 
         assert!(paths.contains(&Path::new("folder1").to_path_buf()));
@@ -60,6 +61,8 @@ mod tests {
         
     }
 
+
+
     #[test]
     fn test_header_2() {
         let file = File::open("test_header.json").unwrap();
@@ -67,14 +70,14 @@ mod tests {
 
         let dummy: Content = {
             let header_json: Value = serde_json::from_reader(reader).unwrap();
-            Content::new(header_json).unwrap()
+            Content::new_json(header_json).unwrap()
         };
 
         let content = dummy.find(Path::new("test1.txt")).unwrap();
 
         if let Content::File(name, offset, size) = content {
             assert_eq!(name, Path::new("test1.txt").to_path_buf());
-            assert_eq!(offset, 30023 as u64);
+            assert_eq!(offset, 30023 as u64); //uncertain if offset remains static at all times.
             assert_eq!(size, 21 as u64);
         }
 
@@ -143,21 +146,6 @@ mod tests {
         assert!(list.contains(&Path::new("folder1/test_image.jpg").to_path_buf()));
         assert_eq!(list.len(), 2);
 
-        //test reading file names from directory
-
-        let asar = Asar::open(Path::new("test_folder")).unwrap();
-        let list = asar.list().unwrap();
-
-        assert!(list.contains(&"folder1".to_string()));
-        assert!(list.contains(&"folder1/script.py".to_string()));
-        assert!(list.contains(&"folder1/test_image.jpg".to_string()));
-        assert!(list.contains(&"test1.txt".to_string()));
-        assert_eq!(list.len(), 4);
-
-        let list = asar.get_paths_contain("test");
-        assert!(list.contains(&Path::new("test1.txt").to_path_buf()));
-        assert!(list.contains(&Path::new("folder1/test_image.jpg").to_path_buf()));
-        assert_eq!(list.len(), 2);
     }
 
     #[test]
@@ -199,6 +187,16 @@ mod tests {
         }
 
 
+    }
+
+
+    #[test]
+    fn test_asar4() {
+        let asar = Asar::open("test_folder");
+
+        assert!(asar.is_ok());
+
+        let result = asar.unwrap().pack("test_pack.asar");
     }
 }
 

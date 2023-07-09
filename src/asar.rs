@@ -1,7 +1,7 @@
 
 use std::{
-    fs::{File, self},
-    path::{Path, PathBuf},
+    fs::{File, self, OpenOptions},
+    path::{Path, PathBuf}, io::Write,
 };
 
 use byteorder::LittleEndian;
@@ -31,6 +31,7 @@ pub struct Asar {
     pub src_path: PathBuf,
     pub content: Content,
     pub start: u64,
+    pub header: Option<Value>
 }
 
 impl Asar {
@@ -46,12 +47,13 @@ impl Asar {
 
         if src_path.is_dir() {
             
-            let (header, start) = Self::gen_header_from_dir(src_path)?;
+            let (header, json_length, list) = Self::gen_header_from_dir(src_path)?;
 
             Ok(Asar {
                 src_path: src_path.to_path_buf(),
-                content: Content::new(header)?,
-                start: start,
+                content: Content::new_list(list),
+                start: json_length + 16,
+                header: Some(header)
             })
 
         } else {
@@ -62,8 +64,9 @@ impl Asar {
                 
                 Ok(Asar {
                     src_path: src_path.to_path_buf(),
-                    content: Content::new(header)?,
+                    content: Content::new_json(header)?,
                     start: start,
+                    header: None
                 })
             } else {
                 Err(Error::ParseHeaderError(
@@ -93,33 +96,46 @@ impl Asar {
         Ok((value, start))
     }
 
-    /// Generates a header for the Asar archive file from the provided directory, along with a start offset.
+    /// Generates a header for the Asar archive file from the provided directory, along with a JSON header length.
     /// 
     /// Takes one argument of type Path which must be a folder- unintended behavior may occur if a file is passed.
+    /// 
+    /// `(Value, u64, Vec<(PathBuf, u64)>)`  ->  `(json_value, json_length, Vec<(file_path, file_size)>)`
     /// 
     /// Returns a tuple of `serde_json::Value` and `u64`, otherwise Error.
     /// 
 
-    pub fn gen_header_from_dir<P: AsRef<Path>>(path: P) -> Result<(Value, u64), asar_error::Error> {
-        let mut offset: u64 = 0;
+    pub fn gen_header_from_dir<P: AsRef<Path>>(path: P) -> Result<(Value, u64, Vec<(PathBuf, u64)>), asar_error::Error> {
+        let mut json_length: u64 = 0;
+        let mut list_of_paths: Vec<(PathBuf, u64)> = Vec::new();
 
-        Ok((Self::dir_to_value(path, &mut offset)?, offset + 16))
+        /*let header = {
+            let mut header = Map::new();
+            
+            header.insert("files".to_string(), Self::dir_to_value(path, &mut json_length, &mut list_of_paths)?);
+
+            Value::Object(header)
+        };*/
+
+        Ok((Self::dir_to_value(path, &mut json_length, &mut list_of_paths)?, json_length, list_of_paths))
     }
 
-    fn dir_to_value<P: AsRef<Path>>(path: P, offset: &mut u64) -> Result<Value, asar_error::Error> {
-        let mut result = Map::new();
+    
+    // Auxiliary function
+    fn dir_to_value<P: AsRef<Path>>(path: P, offset: &mut u64, list: &mut Vec<(PathBuf, u64)>) -> Result<Value, asar_error::Error> {
+        let mut result = Map::new(); //result -> will be object
         
-        let path = path.as_ref();
+        let path = path.as_ref(); //current path
 
         let metadata = path.metadata()?;
 
-        if metadata.is_dir() { //add folder and recurse - value to 
+        if metadata.is_dir() { //add folder and recurse 
 
             let mut folder_content = Map::new();
 
             for entry in fs::read_dir(path)? {
                 let entry = entry?;
-                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), Self::dir_to_value(entry.path(), offset)?);
+                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), Self::dir_to_value(entry.path(), offset, list)?);
             }
 
             result.insert("files".to_string(), Value::Object(folder_content));
@@ -128,6 +144,9 @@ impl Asar {
 
             result.insert("size".to_string(), json!(metadata.len()));
             result.insert("offset".to_string(), Value::String(offset.to_string()));
+
+            // push relevant data to list
+            list.push((path.to_path_buf(), metadata.len()));
 
             *offset += metadata.len();
         }
@@ -160,10 +179,42 @@ impl Asar {
         let file = File::open(self.src_path.as_path())?;
 
         self.content
-            .write_to_dir(destination, &file, self.start)?;
+            .asar_to_dir(destination, &file, self.start)?;
 
         Ok(())
     }
+
+
+    ///
+    /// 
+    
+    pub fn pack<P: AsRef<Path>>(&self, destination: P) -> Result<(), asar_error::Error> {
+        let mut asar = OpenOptions::new().create(true).append(true).open(destination)?;
+
+        
+        let mut header_value: Vec<u8> = {
+            if let Some(header) = &self.header {
+                serde_json::to_vec(header)?
+            } else {
+                return Err(Error::UnknownContentType("Can not have Asar archive file open".to_string()))
+            }
+        };
+
+        let mut header_meta: Vec<u8> = Vec::new();
+
+        header_meta.append(&mut (4 as u32).to_le_bytes().to_vec());
+        header_meta.append(&mut ((self.start - 8) as u32).to_le_bytes().to_vec());
+        header_meta.append(&mut ((self.start - 12) as u32).to_le_bytes().to_vec());
+        header_meta.append(&mut ((self.start - 16) as u32).to_le_bytes().to_vec());
+        header_meta.append(&mut header_value);
+        
+        asar.write_all(&header_meta)?;
+
+        self.content.dir_to_asar(&mut asar)?;
+
+        Ok(())
+    }
+
 
     /// Takes one argument of type Path and provides the file as a vector of bytes if it exists 
     /// and an Asar archive file is open.

@@ -123,6 +123,7 @@ pub fn get_header(json: &Value) -> Vec<u8> {
     let mut json_bytes = serde_json::to_vec(json).expect("Error parsing Value to bytes");
     let len = json_bytes.len() as u32;
     let size = len + (8 - len % 8);
+    
     let mut result: Vec<u8> = (4 as u32).to_le_bytes().to_vec(); //experimental
     result.append(&mut (size + 8 as u32).to_le_bytes().to_vec());
     result.append(&mut (size + 4 as u32).to_le_bytes().to_vec());
