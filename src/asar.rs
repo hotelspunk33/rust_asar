@@ -1,10 +1,10 @@
 
 use std::{
-    fs::{File, self, OpenOptions},
+    fs::{File, self, OpenOptions, remove_file},
     path::{Path, PathBuf}, io::Write,
 };
 
-use byteorder::LittleEndian;
+use byteorder::{LittleEndian, WriteBytesExt};
 use positioned_io::{ReadAt, ReadBytesExt};
 use serde_json::{Value, Map, json};
 
@@ -47,12 +47,12 @@ impl Asar {
 
         if src_path.is_dir() {
             
-            let (header, json_length, list) = Self::gen_header_from_dir(src_path)?;
+            let (header, list) = Self::gen_header_from_dir(src_path)?;
 
             Ok(Asar {
                 src_path: src_path.to_path_buf(),
                 content: Content::new_list(list),
-                start: json_length + 16,
+                start: (serde_json::to_vec(&header)?.len() + 16) as u64,
                 header: Some(header)
             })
 
@@ -105,8 +105,8 @@ impl Asar {
     /// Returns a tuple of `serde_json::Value` and `u64`, otherwise Error.
     /// 
 
-    pub fn gen_header_from_dir<P: AsRef<Path>>(path: P) -> Result<(Value, u64, Vec<(PathBuf, u64)>), asar_error::Error> {
-        let mut json_length: u64 = 0;
+    pub fn gen_header_from_dir<P: AsRef<Path>>(path: P) -> Result<(Value, Vec<(PathBuf, u64)>), asar_error::Error> {
+        let mut offset: u64 = 0;
         let mut list_of_paths: Vec<(PathBuf, u64)> = Vec::new();
 
         /*let header = {
@@ -117,7 +117,7 @@ impl Asar {
             Value::Object(header)
         };*/
 
-        Ok((Self::dir_to_value(path, &mut json_length, &mut list_of_paths)?, json_length, list_of_paths))
+        Ok((Self::dir_to_value(path, &mut offset, &mut list_of_paths)?, list_of_paths))
     }
 
     
@@ -189,30 +189,56 @@ impl Asar {
     /// 
     
     pub fn pack<P: AsRef<Path>>(&self, destination: P) -> Result<(), asar_error::Error> {
+
+
+        if destination.as_ref().try_exists()? {
+            remove_file(&destination)?;
+        }
+
+
         let mut asar = OpenOptions::new().create(true).append(true).open(destination)?;
 
         
         let mut header_value: Vec<u8> = {
             if let Some(header) = &self.header {
+                //println!("{:?}", header);
                 serde_json::to_vec(header)?
             } else {
                 return Err(Error::UnknownContentType("Can not have Asar archive file open".to_string()))
             }
         };
 
-        let mut header_meta: Vec<u8> = Vec::new();
+        //println!("len: {}\n", header_value.len());
+
+        //write to shit
+        asar.write_u32::<LittleEndian>(4 as u32)?;
+
+        //println!("{}", self.start);
+
+
+        asar.write_u32::<LittleEndian>((self.start - 8) as u32)?;
+        asar.write_u32::<LittleEndian>((self.start - 12) as u32)?;
+        asar.write_u32::<LittleEndian>((self.start - 16) as u32)?;
+
+        asar.write_all(&mut header_value)?;
+
+        self.content.dir_to_asar(&mut asar)
+
+        /*let mut header_meta: Vec<u8> = Vec::new();
 
         header_meta.append(&mut (4 as u32).to_le_bytes().to_vec());
         header_meta.append(&mut ((self.start - 8) as u32).to_le_bytes().to_vec());
         header_meta.append(&mut ((self.start - 12) as u32).to_le_bytes().to_vec());
         header_meta.append(&mut ((self.start - 16) as u32).to_le_bytes().to_vec());
         header_meta.append(&mut header_value);
+
+        
         
         asar.write_all(&header_meta)?;
 
-        self.content.dir_to_asar(&mut asar)?;
+        self.content.dir_to_asar(&mut asar)?;*/
 
-        Ok(())
+        //Ok(())
     }
 
 
