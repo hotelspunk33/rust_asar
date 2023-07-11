@@ -15,7 +15,7 @@ const MAX_SAFE_INTEGER: u64 = 9007199254740991; //for compatability with Electro
 /// Content enum keeps track of an asar file's internal structure, represented by
 /// Files, Folders, and Home (the starting directory) for an Asar archive.
 /// 
-/// The List varient is reserved for opening folders as the source path.
+/// The List varient is reserved for opening folders as the source path to pack into an archive file.
 ///
 /// The asar structure recursively consists of:
 ///
@@ -25,11 +25,11 @@ const MAX_SAFE_INTEGER: u64 = 9007199254740991; //for compatability with Electro
 ///
 /// `Home   (asar_contents)`         -> `Home   (Map<String, Value>)`
 /// 
-/// `List   (Vec<(path, size>)`    -> 'List   (Vec<(PathBuf, u64)>)'
+/// `List   (Vec<(full_file_path, size>)`    -> 'List   (Vec<(PathBuf, u64)>)'
 ///
 /// Where:
 ///
-/// - name (PathBuf):  The respective name of the content type -> PathBuf
+/// - name (PathBuf):  The respective name of the content varient -> PathBuf
 ///
 /// - offset   (u64):  The offset in the Asar archive file at which the File content symbolically exists
 ///
@@ -39,7 +39,7 @@ const MAX_SAFE_INTEGER: u64 = 9007199254740991; //for compatability with Electro
 ///
 /// - asar_contents    (Map<String, Value>):  Represents the inside contents of the base folder (base case)
 /// 
-/// - path (PathBuf):  The full path of a file that will be added to Asar archive file
+/// - full_file_path (PathBuf):  The full path of a file that will be added to Asar archive file
 /// 
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -190,25 +190,30 @@ impl Content {
 
     /// Concatenates all files (recursively) of a directory to the Asar archive file provided.
     /// 
-    /// Files are represented by vec in Content::List(vec).
+    /// Files are represented by vector vec in Content::List(vec).
     /// 
-    /// Takes in one argument of type `&mut File`, which must be the Asar archive file in creation.
+    /// Takes one argument of type `&mut File`, which must be the Asar archive file in creation.
     /// > The Asar archive file must have its header written prior to this function call, 
     /// as only files are concatenated.
     /// 
+    /// Function will fail if Content is instantiated as an Archive file.
+    /// 
 
     pub fn dir_to_asar(&self, asar: &mut File) -> Result<(), asar_error::Error> {
+
         if let Content::List(paths) = &self {
+
             for (path, size) in paths {
                 let mut buf: Vec<u8> = vec![0; *size as usize];
-
+                
                 {
                     let mut file = File::open(path)?;
 
-                    file.read_to_end(&mut buf)?;
+                    file.read(&mut buf)?;
                 }
 
                 //write to asar...
+                
                 asar.write_all(&buf)?;
             }
 
@@ -228,7 +233,7 @@ impl Content {
     /// `None` will be returned if a directory is opened.
     ///
     /// Returns the Content enum of the `path` if found, otherwise `None`.
-    /// > All Content types are valid to be returned.
+    /// > All Content varients except for Content::List are valid to be returned.
 
     pub fn find<P>(&self, path: P) -> Option<Content>
     where

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/asar.rs`."><title>asar.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rust_asar" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../rust_asar/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/asar.rs`."><title>asar.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../rust_asar/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -217,13 +217,68 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
-</pre></div><pre class="rust"><code>
-<span class="kw">use </span>std::{
-    fs::{File, <span class="self">self</span>},
-    path::{Path, PathBuf},
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::{
+    fs::{File, <span class="self">self</span>, OpenOptions, remove_file},
+    path::{Path, PathBuf}, io::Write,
 };
 
-<span class="kw">use </span>byteorder::LittleEndian;
+<span class="kw">use </span>byteorder::{LittleEndian, WriteBytesExt};
 <span class="kw">use </span>positioned_io::{ReadAt, ReadBytesExt};
 <span class="kw">use </span>serde_json::{Value, Map, json};
 
@@ -231,7 +286,6 @@
     asar_error::{<span class="self">self</span>, Error},
     content::Content,
 };
-
 
 
 <span class="kw">const </span>JSON_LEN_OFFSET: u64 = <span class="number">12</span>;
@@ -244,12 +298,14 @@
 /// - src_path: Path to either directory or Asar archive file
 /// - content: Content enum to represent the file structure within an Asar archive file
 /// - start: Offset at which content begins (after the header) in archive file.
+/// - header: JSON value of header stored only if Asar is instantiated as a directory, otherwise remains None.
 
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>Asar {
     <span class="kw">pub </span>src_path: PathBuf,
     <span class="kw">pub </span>content: Content,
     <span class="kw">pub </span>start: u64,
+    <span class="kw">pub </span>header: <span class="prelude-ty">Option</span>&lt;Value&gt;
 }
 
 <span class="kw">impl </span>Asar {
@@ -265,25 +321,27 @@
 
         <span class="kw">if </span>src_path.is_dir() {
             
-            <span class="kw">let </span>(header, start) = <span class="self">Self</span>::gen_header_from_dir(src_path)<span class="question-mark">?</span>;
+            <span class="kw">let </span>(header, list) = <span class="self">Self</span>::gen_header_from_dir(src_path)<span class="question-mark">?</span>;
 
             <span class="prelude-val">Ok</span>(Asar {
                 src_path: src_path.to_path_buf(),
-                content: Content::new(header)<span class="question-mark">?</span>,
-                start: start,
+                content: Content::new_list(list),
+                start: (serde_json::to_vec(<span class="kw-2">&amp;</span>header)<span class="question-mark">?</span>.len() + <span class="number">16</span>) <span class="kw">as </span>u64, <span class="comment">//account for padding
+                </span>header: <span class="prelude-val">Some</span>(header)
             })
 
         } <span class="kw">else </span>{
-            <span class="comment">//src must be asar, assume it is and dont check
+            <span class="comment">//src must be asar
             </span><span class="kw">let </span>file = File::open(src_path)<span class="question-mark">?</span>;
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>((header, start)) = <span class="self">Self</span>::get_asar_header(<span class="kw-2">&amp;</span>file) {
                 
                 <span class="prelude-val">Ok</span>(Asar {
                     src_path: src_path.to_path_buf(),
-                    content: Content::new(header)<span class="question-mark">?</span>,
+                    content: Content::new_json(header)<span class="question-mark">?</span>,
                     start: start,
-                })
+                    header: <span class="prelude-val">None
+                </span>})
             } <span class="kw">else </span>{
                 <span class="prelude-val">Err</span>(Error::ParseHeaderError(
                     <span class="string">&quot;Failed to parse archive header, check format&quot;</span>.to_string(),
@@ -312,33 +370,48 @@
         <span class="prelude-val">Ok</span>((value, start))
     }
 
-    <span class="doccomment">/// Generates a header for the Asar archive file from the provided directory, along with a start offset.
+    <span class="doccomment">/// Generates a header for the Asar archive file from the provided directory, along with, 
+    /// a vector containg tuples (full_file_path, file_size) of type (PathBuf, u64). The vector of 
+    /// tuples represents an ordered list of all files (recursively) in the opened directory.
     /// 
     /// Takes one argument of type Path which must be a folder- unintended behavior may occur if a file is passed.
     /// 
-    /// Returns a tuple of `serde_json::Value` and `u64`, otherwise Error.
+    /// `(Value, Vec&lt;(PathBuf, u64)&gt;)`  -&gt;  `(json_value, Vec&lt;(file_path, file_size)&gt;)`
+    /// 
+    /// Returns a tuple of `serde_json::Value` and `Vec&lt;(PathBuf, u64)&gt;`, otherwise Error.
     /// 
 
-    </span><span class="kw">pub fn </span>gen_header_from_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; <span class="prelude-ty">Result</span>&lt;(Value, u64), asar_error::Error&gt; {
+    </span><span class="kw">pub fn </span>gen_header_from_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; <span class="prelude-ty">Result</span>&lt;(Value, Vec&lt;(PathBuf, u64)&gt;), asar_error::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>offset: u64 = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>list_of_paths: Vec&lt;(PathBuf, u64)&gt; = Vec::new();
 
-        <span class="prelude-val">Ok</span>((<span class="self">Self</span>::dir_to_value(path, <span class="kw-2">&amp;mut </span>offset)<span class="question-mark">?</span>, offset + <span class="number">16</span>))
+        <span class="comment">/*let header = {
+            let mut header = Map::new();
+            
+            header.insert(&quot;files&quot;.to_string(), Self::dir_to_value(path, &amp;mut json_length, &amp;mut list_of_paths)?);
+
+            Value::Object(header)
+        };*/
+
+        </span><span class="prelude-val">Ok</span>((<span class="self">Self</span>::dir_to_value(path, <span class="kw-2">&amp;mut </span>offset, <span class="kw-2">&amp;mut </span>list_of_paths)<span class="question-mark">?</span>, list_of_paths))
     }
 
-    <span class="kw">fn </span>dir_to_value&lt;P: AsRef&lt;Path&gt;&gt;(path: P, offset: <span class="kw-2">&amp;mut </span>u64) -&gt; <span class="prelude-ty">Result</span>&lt;Value, asar_error::Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>result = Map::new();
+    
+    <span class="comment">// Returns serde_json::Value from a directory, in Asar archive JSON format.
+    </span><span class="kw">fn </span>dir_to_value&lt;P: AsRef&lt;Path&gt;&gt;(path: P, offset: <span class="kw-2">&amp;mut </span>u64, list: <span class="kw-2">&amp;mut </span>Vec&lt;(PathBuf, u64)&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Value, asar_error::Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>result = Map::new(); <span class="comment">//result -&gt; will be object
         
-        <span class="kw">let </span>path = path.as_ref();
+        </span><span class="kw">let </span>path = path.as_ref(); <span class="comment">//current path
 
-        <span class="kw">let </span>metadata = path.metadata()<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>metadata = path.metadata()<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>metadata.is_dir() { <span class="comment">//add folder and recurse - value to 
+        <span class="kw">if </span>metadata.is_dir() { <span class="comment">//add folder and recurse 
 
             </span><span class="kw">let </span><span class="kw-2">mut </span>folder_content = Map::new();
 
             <span class="kw">for </span>entry <span class="kw">in </span>fs::read_dir(path)<span class="question-mark">? </span>{
                 <span class="kw">let </span>entry = entry<span class="question-mark">?</span>;
-                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), <span class="self">Self</span>::dir_to_value(entry.path(), offset)<span class="question-mark">?</span>);
+                folder_content.insert(entry.file_name().to_str().unwrap().to_string(), <span class="self">Self</span>::dir_to_value(entry.path(), offset, list)<span class="question-mark">?</span>);
             }
 
             result.insert(<span class="string">&quot;files&quot;</span>.to_string(), Value::Object(folder_content));
@@ -347,6 +420,9 @@
 
             </span>result.insert(<span class="string">&quot;size&quot;</span>.to_string(), <span class="macro">json!</span>(metadata.len()));
             result.insert(<span class="string">&quot;offset&quot;</span>.to_string(), Value::String(offset.to_string()));
+
+            <span class="comment">// push relevant data to list
+            </span>list.push((path.to_path_buf(), metadata.len()));
 
             <span class="kw-2">*</span>offset += metadata.len();
         }
@@ -379,10 +455,46 @@
         <span class="kw">let </span>file = File::open(<span class="self">self</span>.src_path.as_path())<span class="question-mark">?</span>;
 
         <span class="self">self</span>.content
-            .write_to_dir(destination, <span class="kw-2">&amp;</span>file, <span class="self">self</span>.start)<span class="question-mark">?</span>;
+            .asar_to_dir(destination, <span class="kw-2">&amp;</span>file, <span class="self">self</span>.start)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }
+
+
+    <span class="doccomment">/// Take one argument of type Path, representing a destination Asar archive file, 
+    /// where the opened directory will be packed- using the pack() associated function.
+    /// 
+    /// Returns (), otherwise Error.
+    
+    </span><span class="kw">pub fn </span>pack&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, destination: P) -&gt; <span class="prelude-ty">Result</span>&lt;(), asar_error::Error&gt; {
+
+        <span class="kw">if </span>destination.as_ref().try_exists()<span class="question-mark">? </span>{
+            remove_file(<span class="kw-2">&amp;</span>destination)<span class="question-mark">?</span>; <span class="comment">//asar will be replaced
+        </span>}
+
+        <span class="kw">let </span><span class="kw-2">mut </span>asar = OpenOptions::new().create(<span class="bool-val">true</span>).append(<span class="bool-val">true</span>).open(destination)<span class="question-mark">?</span>;
+        
+        <span class="kw">let </span><span class="kw-2">mut </span>header_value: Vec&lt;u8&gt; = {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(header) = <span class="kw-2">&amp;</span><span class="self">self</span>.header {
+
+                serde_json::to_vec(header)<span class="question-mark">?
+            </span>} <span class="kw">else </span>{
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::UnknownContentType(<span class="string">&quot;Can not have Asar archive file open&quot;</span>.to_string()))
+            }
+        };
+
+        <span class="comment">// Write header to asar
+        </span>asar.write_u32::&lt;LittleEndian&gt;(<span class="number">4 </span><span class="kw">as </span>u32)<span class="question-mark">?</span>; <span class="comment">//Asar default
+        </span>asar.write_u32::&lt;LittleEndian&gt;((<span class="self">self</span>.start - <span class="number">8</span>) <span class="kw">as </span>u32)<span class="question-mark">?</span>;  <span class="comment">// length of header - 8 
+        </span>asar.write_u32::&lt;LittleEndian&gt;((<span class="self">self</span>.start - <span class="number">12</span>) <span class="kw">as </span>u32)<span class="question-mark">?</span>; <span class="comment">// length of header - 12
+        </span>asar.write_u32::&lt;LittleEndian&gt;((<span class="self">self</span>.start - <span class="number">16</span>) <span class="kw">as </span>u32)<span class="question-mark">?</span>; <span class="comment">// length of json header
+
+        </span>asar.write_all(<span class="kw-2">&amp;mut </span>header_value)<span class="question-mark">?</span>; <span class="comment">//json value
+
+        </span><span class="self">self</span>.content.dir_to_asar(<span class="kw-2">&amp;mut </span>asar) <span class="comment">// concatenates all files.
+
+    </span>}
+
 
     <span class="doccomment">/// Takes one argument of type Path and provides the file as a vector of bytes if it exists 
     /// and an Asar archive file is open.
@@ -436,4 +548,5 @@
         paths
     }
 }
-</code></pre></div></section></main></body></html>
+</code></pre></div>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rust_asar" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

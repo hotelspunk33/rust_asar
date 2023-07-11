@@ -18,7 +18,7 @@ mod tests {
     use positioned_io::{ReadAt, ReadBytesExt};
     use serde_json::{Value};
 
-    use crate::{asar::Asar, content::Content};
+    use crate::{asar::Asar, content::Content, asar_error};
 
     #[test]
     fn test_header_1() {
@@ -55,7 +55,8 @@ mod tests {
         assert!(paths.contains(&Path::new("folder1/script.py").to_path_buf()));
         assert!(paths.contains(&Path::new("test1.txt").to_path_buf()));
         assert!(paths.contains(&Path::new("folder1/test_image.jpg").to_path_buf()));
-        assert_eq!(paths.len(), 4);
+        assert!(paths.contains(&Path::new("another.txt").to_path_buf()));
+        assert_eq!(paths.len(), 5);
 
 
         
@@ -191,12 +192,51 @@ mod tests {
 
 
     #[test]
-    fn test_asar4() {
+    fn test_asar4() -> Result<(), asar_error::Error>{ // tests pack() associated func of Asar
         let asar = Asar::open("test_folder");
 
         assert!(asar.is_ok());
 
-        let result = asar.unwrap().pack("test_pack.asar");
+        let _ = asar.unwrap().pack("test_pack.asar").unwrap();
+
+        let asar = Asar::open("test_pack.asar")?;
+
+        let _ = asar.extract("test_generated_folder")?;
+
+        {
+            let mut file = File::open("test_folder/test1.txt")?;
+            let mut buf1: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf1)?;
+
+            file = File::open("test_generated_folder/test1.txt")?;
+            let mut buf2: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf2)?;
+            assert_eq!(buf1, buf2);
+        }
+
+        {
+            let mut file = File::open("test_folder/folder1/script.py")?;
+            let mut buf1: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf1)?;
+
+            file = File::open("test_generated_folder/folder1/script.py")?;
+            let mut buf2: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf2)?;
+            assert_eq!(buf1, buf2);
+        }
+
+        {
+            let mut file = File::open("test_folder/folder1/test_image.jpg")?;
+            let mut buf1: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf1)?;
+
+            file = File::open("test_generated_folder/folder1/test_image.jpg")?;
+            let mut buf2: Vec<u8> = Vec::new();
+            file.read_to_end(&mut buf2)?;
+            assert_eq!(buf1, buf2);
+        }
+
+        Ok(())
     }
 }
 

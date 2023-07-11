@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"rust_asar":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.70.0/core/cmp/trait.Eq.html\" title=\"trait core::cmp::Eq\">Eq</a> for <a class=\"enum\" href=\"rust_asar/content/enum.Content.html\" title=\"enum rust_asar::content::Content\">Content</a>"]]
+"rust_asar":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.69.0/core/cmp/trait.Eq.html\" title=\"trait core::cmp::Eq\">Eq</a> for <a class=\"enum\" href=\"rust_asar/content/enum.Content.html\" title=\"enum rust_asar::content::Content\">Content</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

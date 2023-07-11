@@ -1,0 +1,3 @@
+This is another text file.
+
+Nothing too complicated, just want to see different offset values.

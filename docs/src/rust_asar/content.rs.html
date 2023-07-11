@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/content.rs`."><title>content.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rust_asar" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../rust_asar/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/content.rs`."><title>content.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../rust_asar/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -341,13 +341,90 @@
 <a href="#341" id="341">341</a>
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::{
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::{
     fs::{DirBuilder, File},
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
-<span class="kw">use </span>positioned_io::{ReadAt};
+<span class="kw">use </span>positioned_io::ReadAt;
 <span class="kw">use </span>serde_json::{Map, Value};
 
 <span class="kw">use </span><span class="kw">crate</span>::asar_error::{<span class="self">self</span>, Error};
@@ -355,47 +432,56 @@
 <span class="doccomment">/// The maximum size of a file within an asar archive.
 </span><span class="kw">const </span>MAX_SAFE_INTEGER: u64 = <span class="number">9007199254740991</span>; <span class="comment">//for compatability with Electron&#39;s Asar library
 
-
 </span><span class="doccomment">/// Content enum keeps track of an asar file&#39;s internal structure, represented by
-/// Files, Folders, and Home (the starting directory).
+/// Files, Folders, and Home (the starting directory) for an Asar archive.
+/// 
+/// The List varient is reserved for opening folders as the source path to pack into an archive file.
 ///
 /// The asar structure recursively consists of:
-/// 
+///
 /// `File   (name, offset, size)`    -&gt; `File   (PathBuf, u64, u64)`
-/// 
+///
 /// `Folder (name, folder_contents)` -&gt; `Folder (PathBuf, Map&lt;String, Value&gt;)`
-/// 
+///
 /// `Home   (asar_contents)`         -&gt; `Home   (Map&lt;String, Value&gt;)`
 /// 
+/// `List   (Vec&lt;(full_file_path, size&gt;)`    -&gt; &#39;List   (Vec&lt;(PathBuf, u64)&gt;)&#39;
+///
 /// Where:
+///
+/// - name (PathBuf):  The respective name of the content varient -&gt; PathBuf
+///
+/// - offset   (u64):  The offset in the Asar archive file at which the File content symbolically exists
+///
+/// - size     (u64):  The size of the File content
+///
+/// - folder_contents  (Map&lt;String, Value&gt;):  Represents the inside contents within a Folder content
+///
+/// - asar_contents    (Map&lt;String, Value&gt;):  Represents the inside contents of the base folder (base case)
 /// 
-/// - name (PathBuf):  the respective name of the content type -&gt; PathBuf
+/// - full_file_path (PathBuf):  The full path of a file that will be added to Asar archive file
 /// 
-/// - offset   (u64):  the offset in the Asar archive file at which the File content symbolically exists
-/// 
-/// - size     (u64):  the size of the File content
-/// 
-/// - folder_contents (Map&lt;String, Value&gt;):  Represents the inside contents within a Folder content.
-/// 
-/// - asar_contents   (Map&lt;String, Value&gt;):  Represents the inside contents of the base folder (base case).
 
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>Content {
     File(PathBuf, u64, u64),             <span class="comment">// (name, offset, size)
     </span>Folder(PathBuf, Map&lt;String, Value&gt;), <span class="comment">// (name, folder_content)
     </span>Home(Map&lt;String, Value&gt;),            <span class="comment">// (asar_content)
+    </span>List(Vec&lt;(PathBuf, u64)&gt;),           <span class="comment">// (Listof (full_file_path, size))
 </span>}
-
 
 <span class="kw">impl </span>Content {
 
     <span class="doccomment">/// Instantiates a Content enum given the one argument provided of type `serde_json::Value`.
-    /// 
+    ///
     /// The parameter `header` represents a JSON value found as the header in an Asar archive.
-    /// 
+    /// Thus, used to enumerate internal strucuture of Asar archive file.
+    ///
+    /// Do not use with opened folder.
+    ///
     /// Returns instantiated Content enum, otherwise Error.
-    
-    </span><span class="kw">pub fn </span>new(header: Value) -&gt; <span class="prelude-ty">Result</span>&lt;Content, asar_error::Error&gt; {
+
+    </span><span class="kw">pub fn </span>new_json(header: Value) -&gt; <span class="prelude-ty">Result</span>&lt;Content, asar_error::Error&gt; {
         <span class="kw">if let </span>Value::Object(item) = header {
             <span class="prelude-val">Ok</span>(lookahead(<span class="string">&quot;&quot;</span>, <span class="kw-2">&amp;</span>item)<span class="question-mark">?</span>)
         } <span class="kw">else </span>{
@@ -405,9 +491,28 @@
         }
     }
 
+
+    <span class="doccomment">/// Instantiates a Content enum given the one argument provided,
+    /// representing a list of files and their size.
+    ///
+    /// - `(PathBuf, u64)` -&gt; `(full file path, length of file)`
+    ///
+    /// This specific varient represents the files of a directory to be concatenated on to an Asar archive file.
+    /// Due to this, functionality is limited to only the `dir_to_asar` function.
+    /// 
+    ///
+    /// Do not use with opened Asar archive file.
+    ///
+    /// Returns the List varient of the Content enum.
+
+    </span><span class="kw">pub fn </span>new_list(list: Vec&lt;(PathBuf, u64)&gt;) -&gt; Content {
+        Content::List(list)
+    }
+
+
     <span class="doccomment">/// Returns a vector of PathBufs representing all files and folders within Asar archive,
     /// otherwise an Error.
-    
+
     </span><span class="kw">pub fn </span>paths_to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;PathBuf&gt;, asar_error::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>vec: Vec&lt;PathBuf&gt; = Vec::new(); <span class="comment">//problematic for concurrency
 
@@ -431,38 +536,37 @@
 
         <span class="prelude-val">Ok</span>(vec)
     }
+    
 
     <span class="doccomment">/// Writes the files and folders of current Content enum to the provided base_path folder.
-    /// 
+    ///
     /// - base_path: the destination folder (home folder) where archive content will be written
-    /// 
+    ///
     /// - file: the Asar archive file to obtain the Content to be written
-    /// 
+    ///
     /// - start: the offset at which the file content start within Asar archive file
-    /// 
-    /// &gt; The Asar archive file must be passed in the `file` parameter, 
+    ///
+    /// &gt; The Asar archive file must be passed in the `file` parameter,
     /// otherwise unintended behavior may occur.
-    /// 
+    ///
     /// Returns (), otherwise Error.
-    
-    </span><span class="kw">pub fn </span>write_to_dir&lt;P: AsRef&lt;Path&gt;&gt;(
+
+    </span><span class="kw">pub fn </span>asar_to_dir&lt;P: AsRef&lt;Path&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         base_path: P,
         file: <span class="kw-2">&amp;</span>File,
         start: u64,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), asar_error::Error&gt; {
-
         <span class="kw">let </span>base_path = base_path.as_ref();
 
         <span class="kw">match </span><span class="self">self </span>{
-
             <span class="comment">// Create folder for home directory of Asar
             </span>Content::Home(dir) =&gt; {
                 <span class="kw">for </span>(name, value) <span class="kw">in </span>dir.iter() {
                     <span class="kw">if let </span>Value::Object(content) = value {
                         <span class="comment">//cast
                         </span>DirBuilder::new().recursive(<span class="bool-val">true</span>).create(base_path)<span class="question-mark">?</span>; <span class="comment">//Create parent directory
-                        </span>lookahead(name, content)<span class="question-mark">?</span>.write_to_dir(base_path, file, start)<span class="question-mark">?</span>;
+                        </span>lookahead(name, content)<span class="question-mark">?</span>.asar_to_dir(base_path, file, start)<span class="question-mark">?</span>;
                     }
                 }
 
@@ -476,7 +580,7 @@
 
                 </span><span class="kw">for </span>(name, value) <span class="kw">in </span>dir.iter() {
                     <span class="kw">if let </span>Value::Object(content) = value {
-                        lookahead(name, content)<span class="question-mark">?</span>.write_to_dir(path.as_path(), file, start)<span class="question-mark">?</span>;
+                        lookahead(name, content)<span class="question-mark">?</span>.asar_to_dir(path.as_path(), file, start)<span class="question-mark">?</span>;
                     }
                 }
 
@@ -488,7 +592,7 @@
                 <span class="kw">let </span>path = base_path.join(name);
 
                 <span class="kw">let </span><span class="kw-2">mut </span>file_as_vec: Vec&lt;u8&gt; = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="kw-2">*</span>size <span class="kw">as </span>usize]; <span class="comment">//init vec of bytes for file
-                //io.read_exact_at(start + offset, &amp;mut file_as_vec)?;
+                                                                        //io.read_exact_at(start + offset, &amp;mut file_as_vec)?;
                 </span>file.read_exact_at(start + offset, <span class="kw-2">&amp;mut </span>file_as_vec)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span><span class="kw-2">mut </span>file = File::create(<span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
@@ -496,22 +600,70 @@
 
                 </span><span class="prelude-val">Ok</span>(())
             }
+
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::UnknownContentType(<span class="macro">format!</span>(
+                <span class="string">&quot;Asar archive file must be src_path&quot;
+            </span>))),
         }
     }
 
-    <span class="doccomment">/// todo -&gt; last thing then done
-    </span><span class="kw">pub fn </span>write_to_asar&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _dest: P){}
+
+    <span class="doccomment">/// Concatenates all files (recursively) of a directory to the Asar archive file provided.
+    /// 
+    /// Files are represented by vector vec in Content::List(vec).
+    /// 
+    /// Takes one argument of type `&amp;mut File`, which must be the Asar archive file in creation.
+    /// &gt; The Asar archive file must have its header written prior to this function call, 
+    /// as only files are concatenated.
+    /// 
+    /// Function will fail if Content is instantiated as an Archive file.
+    /// 
+
+    </span><span class="kw">pub fn </span>dir_to_asar(<span class="kw-2">&amp;</span><span class="self">self</span>, asar: <span class="kw-2">&amp;mut </span>File) -&gt; <span class="prelude-ty">Result</span>&lt;(), asar_error::Error&gt; {
+
+        <span class="kw">if let </span>Content::List(paths) = <span class="kw-2">&amp;</span><span class="self">self </span>{
+
+            <span class="kw">for </span>(path, size) <span class="kw">in </span>paths {
+                <span class="kw">let </span><span class="kw-2">mut </span>buf: Vec&lt;u8&gt; = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="kw-2">*</span>size <span class="kw">as </span>usize];
+                
+                {
+                    <span class="kw">let </span><span class="kw-2">mut </span>file = File::open(path)<span class="question-mark">?</span>;
+
+                    file.read(<span class="kw-2">&amp;mut </span>buf)<span class="question-mark">?</span>;
+                }
+
+                <span class="comment">//write to asar...
+                
+                </span>asar.write_all(<span class="kw-2">&amp;</span>buf)<span class="question-mark">?</span>;
+            }
+
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
+
+        <span class="prelude-val">Err</span>(Error::UnknownContentType(<span class="macro">format!</span>(
+            <span class="string">&quot;Folder must be src_path, Asar archive file found&quot;
+        </span>)))
+    }
+
 
     <span class="doccomment">/// Searches for a file by its full path name provided by the parameter `path`.
-    /// 
+    ///
+    /// Asar archive file must be opened.
+    ///
+    /// `None` will be returned if a directory is opened.
+    ///
     /// Returns the Content enum of the `path` if found, otherwise `None`.
-    /// &gt; All Content types are valid to be returned.
+    /// &gt; All Content varients except for Content::List are valid to be returned.
 
     </span><span class="kw">pub fn </span>find&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Option</span>&lt;Content&gt;
-        <span class="kw">where </span>P: AsRef&lt;Path&gt; {
+    <span class="kw">where
+        </span>P: AsRef&lt;Path&gt;,
+    {
         <span class="comment">// Recursively finds path in content
-        </span><span class="kw">fn </span>find_aux&lt;P&gt;(content: <span class="kw-2">&amp;</span>Content, path: P, curr_path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Option</span>&lt;Content&gt; 
-        <span class="kw">where </span>P: AsRef&lt;Path&gt; {
+        </span><span class="kw">fn </span>find_aux&lt;P&gt;(content: <span class="kw-2">&amp;</span>Content, path: P, curr_path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Option</span>&lt;Content&gt;
+        <span class="kw">where
+            </span>P: AsRef&lt;Path&gt;,
+        {
             <span class="kw">match </span>content {
                 Content::Home(dir) =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">None </span>= path.as_ref().file_stem() {
@@ -521,7 +673,8 @@
                     </span>} <span class="kw">else </span>{
                         <span class="comment">// iterate through home directory
                         </span><span class="kw">for </span>(name, object) <span class="kw">in </span>dir.into_iter() {
-                            <span class="kw">if </span>path.as_ref().starts_with(curr_path.join(name)) { <span class="comment">//dont like might change
+                            <span class="kw">if </span>path.as_ref().starts_with(curr_path.join(name)) {
+                                <span class="comment">//dont like might change
                                 // check if item is correct
                                 </span><span class="kw">if let </span>Value::Object(item) = object {
                                     <span class="kw">return </span>find_aux(
@@ -567,6 +720,8 @@
                     }
                     <span class="prelude-val">None
                 </span>}
+
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
             }
         }
 
@@ -583,7 +738,6 @@
     name: <span class="kw-2">&amp;</span>str,
     item: <span class="kw-2">&amp;</span>serde_json::Map&lt;String, Value&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Content, asar_error::Error&gt; {
-
     <span class="kw">if </span>name.is_empty() {
         <span class="comment">//value is either home
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(Value::Object(dir)) = item.get(<span class="string">&quot;files&quot;</span>) {
@@ -684,4 +838,5 @@
 </span>}
 
 <span class="comment">// TODO: Implement fold for Content
-</span></code></pre></div></section></main></body></html>
+</span></code></pre></div>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rust_asar" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

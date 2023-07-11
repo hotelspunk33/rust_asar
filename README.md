@@ -10,6 +10,58 @@ Library to create, modify, and extract Asar archives, as does Electron's Asar [l
 
 View the documentation [here](https://hotelspunk33.github.io/rust_asar/).
 
+### Examples
+
+Additionally, refer to the test cases in src/lib.rs as an example.
+
+```Rust
+// Extracting an Asar archive file:
+let asar: Asar = Asar::open("app.asar").unwrap();
+
+{
+    // Additional functions available only for opened archive files:
+    let list_of_paths: Vec<String> = asar.list().unwrap();
+
+    let test1: Vec<u8> = asar.get_file("test1.txt").unwrap();
+
+    // etc.. see documentation
+}
+
+if asar.extract("test_extract").is_ok() {
+    println!("Done.");
+} else {
+    println!("Failed.");
+}
+
+// Packing a directory into an Asar archive file:
+let dir: Asar = Asar::open("app").unwrap();
+
+if asar.pack("app.asar").is_ok() {
+    println!("Done.");
+} else {
+    println!("Failed.");
+}
+```
+
+### Asar Archive Represented Structure
+
+The Content enum keeps track of an asar file's internal structure, represented by
+Files, Folders, and Home (the starting directory / base case).
+
+The Content enum for an Asar archive recursively consists of:
+
+`File   (name, offset, size)`    -> `File   (PathBuf, u64, u64)`
+
+`Folder (name, folder_contents)` -> `Folder (PathBuf, Map<String, Value>)`
+
+`Home   (asar_contents)`         -> `Home   (Map<String, Value>)`
+
+The Content enum for an opened directory only consists of:
+
+`List (files)` -> `List (Vec<(PathBuf, u64)>)`
+
+- Where files represents full file paths and file sizes.
+
 ------------
 
 ## Idea
@@ -56,22 +108,7 @@ A simple example:
 
 ------------
 
-### Asar Archive Represented Structure
-
-The Content enum keeps track of an asar file's internal structure, represented by
-Files, Folders, and Home (the starting directory / base case).
-
-The Content enum recursively consists of:
-
-`File   (name, offset, size)`    -> `File   (PathBuf, u64, u64)`
-
-`Folder (name, folder_contents)` -> `Folder (PathBuf, Map<String, Value>)`
-
-`Home   (asar_contents)`         -> `Home   (Map<String, Value>)`
-
-------------
-
-### Interoperability
+## Interoperability
 
 This library is not compatible with modern versions of the Asar archive. The full functionality of the Asar file is not implemented, as rust_asar serves its purpose more as a proof-of-concept than a stable and usable library.
 
@@ -84,12 +121,6 @@ The following features have yet to be implemented:
 - symbolic link support
 
 > Missing functionality should not be difficult to implement if needed in the future.
-
-------------
-
-## Examples
-
-Examples have not been added to the documentation yet. For now, refer to the test cases in src/lib.rs as an example.
 
 ------------
 
